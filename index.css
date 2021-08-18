@@ -1,0 +1,40 @@
+body{
+    margin:0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: silver;
+}
+.container{
+
+    border:1px solid white;
+}
+.path{
+    animation: dash 3s ease-in forwards;
+}
+@keyframes dash {
+    to{
+        stroke-dashoffset: 0;
+    }
+}
+.path:hover{
+    stroke-width: 5;
+}
+circle{
+    transition: ease 0.2s;
+}
+circle:hover{
+    r:8;
+    box-shadow: 0 0 0 10px rgba(0,255,0,0.3);
+}
+text{
+    font-size: 12px;
+    font-family: 'ubuntu','consolas','roboto';
+    color:silver;
+}
+.title{
+    font-size: 32px;
+    font-family: 'serif';
+    border:1px solid silver
+}
