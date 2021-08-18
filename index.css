@@ -11,6 +11,7 @@ body{
     border:1px solid white;
 }
 .path{
+    transition: 0.2s;
     animation: dash 3s ease-in forwards;
 }
 @keyframes dash {

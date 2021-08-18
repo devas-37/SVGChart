@@ -13,7 +13,7 @@ function SVGChart(container, options) {
     this.init(container, options, padding, cord, awidth);
 }
 
-SVGChart.prototype = (function () {
+SVGChart.prototype = (function() {
     let max_count = -1
 
     function round(float) {
@@ -24,13 +24,13 @@ SVGChart.prototype = (function () {
         return document.createElementNS("http://www.w3.org/2000/svg", type)
     }
 
-    SVGElement.prototype.set = function (options = {}) {
+    SVGElement.prototype.set = function(options = {}) {
         for (const [key, val] of Object.entries(options)) {
             this.setAttributeNS(null, key, val.toString())
-            // this.setAttributeNS(null,'stroke-linejoin', 'round')
+                // this.setAttributeNS(null,'stroke-linejoin', 'round')
         }
     }
-    HTMLElement.prototype.set = function (options = {}) {
+    HTMLElement.prototype.set = function(options = {}) {
         for (const [key, val] of Object.entries(options)) {
             this.setAttribute(key, val.toString())
         }
@@ -66,6 +66,7 @@ SVGChart.prototype = (function () {
                 'width': o.width,
                 'height': o.height,
             })
+            this.v_bufer = [] //Alohida ajratiluvchi chiziqlar id larini saqlab turish uchun
             this.label = o.label
             this.anim = o.animation
             this.svg.appendChild(rect)
@@ -91,12 +92,12 @@ SVGChart.prototype = (function () {
         drawT(text, x, y, color, align, balign, style) {
 
             let t = CNS("text")
-            t.set({x: x, y: y, fill: color, 'alignment-baseline': balign, 'text-anchor': align, style: style})
+            t.set({ x: x, y: y, fill: color, 'alignment-baseline': balign, 'text-anchor': align, style: style })
             let m = document.createTextNode(text)
             t.appendChild(m)
             this.svg.appendChild(t)
         },
-        drawC(x, y, r, c) {
+        drawC(x, y, r, c,cl) {
             let circle = CNS('circle')
             circle.set({
                 'stroke': this.bg,
@@ -106,6 +107,7 @@ SVGChart.prototype = (function () {
                 'r': r,
                 'fill': c,
             })
+            if (cl) circle.set({class:cl})
             this.svg.appendChild(circle)
         },
         drawL(x1, y1, x2, y2, color, width) {
@@ -119,6 +121,7 @@ SVGChart.prototype = (function () {
                 'y2': y2,
                 fill: 'none'
             })
+
             this.svg.appendChild(b)
         },
         getMax(data) {
@@ -153,21 +156,34 @@ SVGChart.prototype = (function () {
         },
         drawLegend(color) {
             let g = CNS('g')
-            g.set({transform: `translate(${this.cord.x + this.aw + 20},${this.h / 2 - this.data.length * 30 / 2})`})
+            g.set({ transform: `translate(${this.cord.x + this.aw + 20},${this.h / 2 - this.data.length * 30 / 2})` })
             let h = 5;
             for (let i = 0; i < this.data.length; i++) {
                 let gg = CNS('g')
-                gg.set({id: this.data[i].label})
-                gg.addEventListener('mouseenter', (e)=>{
-                    this.data.forEach(e=>{
-                        document.getElementById(e.label).style.opacity='0.1'
+                gg.set({ iden: this.data[i].label,id:'G'+this.data[i].label })
+                gg.addEventListener('click', (e) => {
+                    let id = e.target.parentNode.getAttribute('iden')
+                    e.target.parentNode.set({x:10})
+                    if (!this.v_bufer.includes(id)) this.v_bufer.push(id)
+                    else
+                        this.v_bufer = this.v_bufer.filter(e => e !== id)
+                    this.data.forEach(e => {
+                        document.getElementById(e.label).set({style:'opacity:0.1;stroke-width:1'})
+                        document.getElementById('G'+e.label).set({style:'opacity:0.3'})
+                        let circle=document.getElementsByClassName('C.'+e.label)
+                        for (let [m,a] of Object.entries(circle))
+                        a.style.opacity='0'
                     })
-                    let id = e.target.getAttribute('id')
-                    document.getElementById(id).style.opacity = '1';
+                    this.v_bufer.forEach(e => {
+                        document.getElementById(e).set({style:'opacity:1;stroke-width:3'})
+                        document.getElementById('G'+e).set({style:'opacity:1'})
+                        let circle=document.getElementsByClassName('C.'+e)
+                        for (let [m,a] of Object.entries(circle))
+                        a.style.opacity='1'
+                    })
                 })
-
                 let rec = CNS('rect')
-                rec.set({x: 0, y: h, width: 30, height: 15, fill: Colors[i]});
+                rec.set({ x: 0, y: h, width: 30, height: 15, fill: Colors[i] });
                 gg.appendChild(rec)
                 let t = CNS('text')
                 let n = document.createTextNode(this.data[i].label)
@@ -184,11 +200,7 @@ SVGChart.prototype = (function () {
                 h += 25
                 g.appendChild(gg)
             }
-            g.addEventListener('mouseleave',(e)=>{
-                this.data.forEach(e=>{
-                    document.getElementById(e.label).style.opacity='1'
-                })
-            })
+
             this.svg.appendChild(g)
         },
 
@@ -214,8 +226,8 @@ SVGChart.prototype = (function () {
                     d += `C${xx + round(i * aw + aw / 2)},${y1} `
                     d += `${xx + round((i + 1) * aw - aw / 2)},${y} `
                     d += `${xx + round((i + 1) * aw)},${y}`
-                    // this.drawL(this.cord.x + ((i ) * aw),this.cord.y,this.cord.x + ((i ) * aw),y1,'silver',0.5)
-                    // this.drawL(this.cord.x + ((i+1 ) * aw),this.cord.y,this.cord.x + ((i +1) * aw),y,'silver',0.5)
+                        // this.drawL(this.cord.x + ((i ) * aw),this.cord.y,this.cord.x + ((i ) * aw),y1,'silver',0.5)
+                        // this.drawL(this.cord.x + ((i+1 ) * aw),this.cord.y,this.cord.x + ((i +1) * aw),y,'silver',0.5)
                 }
                 pat.set({
                     'stroke': Colors[index],
@@ -230,7 +242,7 @@ SVGChart.prototype = (function () {
                 }
                 this.svg.appendChild(pat)
                 for (let i = 0; i < data.length && this.point; i++) {
-                    this.drawC(xx + i * aw, this.cord.y - data[i] / this.max * dif, 5, Colors[index])
+                    this.drawC(xx + i * aw, this.cord.y - data[i] / this.max * dif, 5, Colors[index], 'C.'+el.label)
                 }
             })
             this.drawLabels()

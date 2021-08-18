@@ -4,7 +4,7 @@
 let data = []
 let labels=['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr']
 let legend_name=['UZS','WMR','WMZ','RUB','CND','YUAN','SO`M','ALIENWARE']
-for (let i = 0; i < 7; i++) {
+for (let i = 0; i < 5; i++) {
     let _=[]
     let rr=Math.random()*200+100
     for(let j=0;j<12;j++){
@@ -26,7 +26,7 @@ let m = new SVGChart('app',{
     type:'spline',
     point:true,
     title:'Valyutalar dinamikasi',
-    animation:true,
+    animation:false,
     label:labels,
     bgColor:'#021b30'
 })
